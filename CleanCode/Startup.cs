@@ -1,3 +1,4 @@
+using CleanCode.Services.DB;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -30,6 +31,8 @@ namespace CleanCode
                 options.Configuration = Configuration.GetConnectionString("Redis");
                 options.InstanceName = "RedisDB_";
             });
+
+            services.AddScoped<IdbRoulettes, dbRoulettes>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
