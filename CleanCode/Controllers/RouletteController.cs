@@ -1,4 +1,5 @@
-﻿using CleanCode.Services.DB;
+﻿using CleanCode.Models;
+using CleanCode.Services.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -28,6 +29,28 @@ namespace CleanCode.Controllers
             catch(Exception ex)
             {
                 return BadRequest(ex);
+            }
+        }
+
+        [HttpPost("Bet")]
+        public IActionResult Bet(BetRoulette model)
+        {
+            try
+            {
+                string msg = "";
+                model.IdClient = Convert.ToInt32(Request.Headers["IdClient"]);
+                if (model.validate())
+                {
+                    _db.CreateBet(model);
+                    msg = "Se ha creado la apuesta correctamente";
+                }
+                else msg = "Se tiene que hacer una apuesta válida";
+                
+                return Ok(msg);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }

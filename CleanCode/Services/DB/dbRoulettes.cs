@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using CleanCode.Models;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -35,6 +36,31 @@ namespace CleanCode.Services.DB
                     throw new Exception("Ha ocurrido un error en la BD: " + ex.Message);
                 }
             }                     
+        }
+
+        public void CreateBet(BetRoulette bet)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "insert into Bets(Number,Color,Amount,IdClient)" +
+                               " values(@Number,@Color,@Amount,@IdClient)" +
+                               "select SCOPE_IDENTITY()";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@Number", (object)bet.Number ?? DBNull.Value);
+                command.Parameters.AddWithValue("@Color", (object)bet.Color ?? DBNull.Value);
+                command.Parameters.AddWithValue("@Amount", bet.Amount);
+                command.Parameters.AddWithValue("@IdClient", bet.IdClient);
+                try
+                {
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                    connection.Close();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Ha ocurrido un error en la BD: " + ex.Message);
+                }
+            }
         }
     }
 }
