@@ -26,6 +26,10 @@ namespace CleanCode
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddStackExchangeRedisCache(options => {
+                options.Configuration = Configuration.GetConnectionString("Redis");
+                options.InstanceName = "RedisDB_";
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
