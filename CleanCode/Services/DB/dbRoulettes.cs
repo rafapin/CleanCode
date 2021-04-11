@@ -143,5 +143,34 @@ namespace CleanCode.Services.DB
                 }
             }
         }
+
+        public List<Roulette> GetRoulettes()
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "select * from Roulettes";
+                SqlCommand command = new SqlCommand(query, connection);
+                List<Roulette> Roulettes = new List<Roulette>();
+                try
+                {
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        var roulette = new Roulette();
+                        roulette.IdRoulette = reader.GetInt32(0);
+                        if (!reader.IsDBNull(1)) roulette.WinNumber = reader.GetInt32(1);
+                        Roulettes.Add(roulette);
+                    }
+                    reader.Close();
+                    connection.Close();
+                    return Roulettes;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Ha ocurrido un error en la BD: " + ex.Message);
+                }
+            }
+        }
     }
 }

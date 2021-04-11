@@ -13,5 +13,6 @@ namespace CleanCode.Services.DB
         bool VerifyStatus(int id);
         List<BetRoulette> ListBets(int id);
         void UpdateRoulette(ResponseBets model);
+        List<Roulette> GetRoulettes();
     }
 }

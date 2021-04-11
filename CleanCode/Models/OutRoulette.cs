@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace CleanCode.Models
 {
-    public class Roulette
+    public class OutRoulette
     {
         public int IdRoulette { get; set; }
-        public int? WinNumber { get; set; }
+        public string Status { get; set; }
     }
 }

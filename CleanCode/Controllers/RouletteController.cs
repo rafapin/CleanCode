@@ -92,5 +92,20 @@ namespace CleanCode.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("List")]
+        public IActionResult List()
+        {
+            try
+            {
+                var InRoulettes = _db.GetRoulettes();
+                var OutRoulettes = new ResponseListRoulettes(InRoulettes);
+                return Ok(OutRoulettes);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
