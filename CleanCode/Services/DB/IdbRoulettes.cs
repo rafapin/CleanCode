@@ -10,5 +10,6 @@ namespace CleanCode.Services.DB
     {
         int CreateRoulette();
         void CreateBet(BetRoulette model);
+        bool VerifyStatus(int id);
     }
 }

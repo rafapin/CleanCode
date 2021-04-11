@@ -43,7 +43,7 @@ namespace CleanCode.Services.DB
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 string query = "insert into Bets(Number,Color,Amount,IdClient)" +
-                               " values(@Number,@Color,@Amount,@IdClient)" +
+                               "values(@Number,@Color,@Amount,@IdClient)" +
                                "select SCOPE_IDENTITY()";
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@Number", (object)bet.Number ?? DBNull.Value);
@@ -55,6 +55,31 @@ namespace CleanCode.Services.DB
                     connection.Open();
                     command.ExecuteNonQuery();
                     connection.Close();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Ha ocurrido un error en la BD: " + ex.Message);
+                }
+            }
+        }
+
+        public bool VerifyStatus(int id)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "select WinNumber from Roulettes where IdRoulette=@id";
+                bool status = false;
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@id", id);
+                try
+                {
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    reader.Read();
+                    if (reader.IsDBNull(0)) status = true;                        
+                    reader.Close();
+                    connection.Close();
+                    return status;
                 }
                 catch (Exception ex)
                 {

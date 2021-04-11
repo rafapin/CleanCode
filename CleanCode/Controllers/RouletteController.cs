@@ -32,9 +32,26 @@ namespace CleanCode.Controllers
             }
         }
 
+        [HttpGet("VerifyStatus")]
+        public IActionResult VerifyStatus(int Id)
+        {
+            try
+            {
+                string msg;
+                if (_db.VerifyStatus(Id)) msg = "La operación fue existosa";
+                else msg = "La operación fue denegada";
+                return Ok(msg);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost("Bet")]
         public IActionResult Bet(BetRoulette model)
         {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
                 string msg = "";
