@@ -42,14 +42,15 @@ namespace CleanCode.Services.DB
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string query = "insert into Bets(Number,Color,Amount,IdClient)" +
-                               "values(@Number,@Color,@Amount,@IdClient)" +
+                string query = "insert into Bets(Number,Color,Amount,IdClient.IdRoulette)" +
+                               "values(@Number,@Color,@Amount,@IdClient,@IdRoulette)" +
                                "select SCOPE_IDENTITY()";
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@Number", (object)bet.Number ?? DBNull.Value);
                 command.Parameters.AddWithValue("@Color", (object)bet.Color ?? DBNull.Value);
                 command.Parameters.AddWithValue("@Amount", bet.Amount);
                 command.Parameters.AddWithValue("@IdClient", bet.IdClient);
+                command.Parameters.AddWithValue("@IdRoulette", bet.IdRoulette);
                 try
                 {
                     connection.Open();
@@ -80,6 +81,61 @@ namespace CleanCode.Services.DB
                     reader.Close();
                     connection.Close();
                     return status;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Ha ocurrido un error en la BD: " + ex.Message);
+                }
+            }
+        }
+
+        public List<BetRoulette> ListBets(int id)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "select * from Bets where IdRoulette=@id";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@id", id);
+                List<BetRoulette> Bets = new List<BetRoulette>();
+                try
+                {
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        var Bet = new BetRoulette();
+                        Bet.IdBet = reader.GetInt32(0);
+                        if (!reader.IsDBNull(1)) Bet.Number = reader.GetInt32(1);
+                        if (!reader.IsDBNull(2)) Bet.Color = reader.GetString(2);
+                        Bet.Amount = reader.GetDouble(3);
+                        Bet.IdClient = reader.GetInt32(4);
+                        Bet.IdRoulette = id;
+                        Bets.Add(Bet);
+                    }                    
+                    reader.Close();
+                    connection.Close();
+                    return Bets;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Ha ocurrido un error en la BD: " + ex.Message);
+                }
+            }
+        }
+
+        public void UpdateRoulette(ResponseBets model)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "update Roulettes set WinNumber=@WinNumber where IdRoulette=@id";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@WinNumber", model.WinNumber);
+                command.Parameters.AddWithValue("@id", model.IdRoulette);
+                try
+                {
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                    connection.Close();
                 }
                 catch (Exception ex)
                 {

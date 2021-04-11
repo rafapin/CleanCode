@@ -16,6 +16,7 @@ namespace CleanCode.Models
         [Range(0, 10000)]
         public double Amount { get; set; }
         public int IdClient { get; set; }
+        public int IdRoulette { get; set; }
         
 
         public bool validate()

@@ -70,5 +70,27 @@ namespace CleanCode.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPost("Close/{Id}")]
+        public IActionResult Close(int Id)
+        {
+            try
+            {
+                var InBets = _db.ListBets(Id);
+                CalculateCloseRoulette calculate = new CalculateCloseRoulette();
+                var OutBets = calculate.Calculate(InBets);
+                ResponseBets model = new ResponseBets();
+                model.Bets = OutBets;
+                model.IdRoulette = Id;
+                model.WinNumber = calculate.WinNumber;
+                _db.UpdateRoulette(model);
+
+                return Ok(model);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
