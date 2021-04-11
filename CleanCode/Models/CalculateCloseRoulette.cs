@@ -33,7 +33,8 @@ namespace CleanCode.Models
                 {
                     IdBet = bet.IdBet,
                     IdClient = bet.IdClient,
-                    AmountEarned = AmountEarned
+                    AmountEarned = AmountEarned,
+                    DateCreate = bet.DateCreate
                 });
             }
 

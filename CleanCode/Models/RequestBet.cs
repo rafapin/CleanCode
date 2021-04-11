@@ -10,5 +10,6 @@ namespace CleanCode.Models
         public int IdBet { get; set; }
         public double AmountEarned { get; set; }
         public int IdClient { get; set; }
+        public DateTime DateCreate { get; set; }
     }
 }

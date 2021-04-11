@@ -21,9 +21,11 @@ namespace CleanCode.Services.DB
         {            
             using (SqlConnection connection = new SqlConnection(connectionString))
             {   
-                string query = "insert into Roulettes(WinNumber) values(null) select SCOPE_IDENTITY()";
+                string query = "insert into Roulettes(WinNumber,DateCreate,DateClose)"+
+                            " values(null,@DateCreate,null) select SCOPE_IDENTITY()";
                 int id;
                 SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@DateCreate", DateTime.UtcNow);
                 try
                 {
                     connection.Open();
@@ -42,8 +44,8 @@ namespace CleanCode.Services.DB
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string query = "insert into Bets(Number,Color,Amount,IdClient,IdRoulette)" +
-                               "values(@Number,@Color,@Amount,@IdClient,@IdRoulette)" +
+                string query = "insert into Bets(Number,Color,Amount,IdClient,IdRoulette,DateCreate)" +
+                               "values(@Number,@Color,@Amount,@IdClient,@IdRoulette,@DateCreate)" +
                                "select SCOPE_IDENTITY()";
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@Number", (object)bet.Number ?? DBNull.Value);
@@ -51,6 +53,7 @@ namespace CleanCode.Services.DB
                 command.Parameters.AddWithValue("@Amount", bet.Amount);
                 command.Parameters.AddWithValue("@IdClient", bet.IdClient);
                 command.Parameters.AddWithValue("@IdRoulette", bet.IdRoulette);
+                command.Parameters.AddWithValue("@DateCreate", DateTime.UtcNow);
                 try
                 {
                     connection.Open();
@@ -109,6 +112,7 @@ namespace CleanCode.Services.DB
                         if (!reader.IsDBNull(2)) Bet.Color = reader.GetString(2);
                         Bet.Amount = reader.GetDouble(3);
                         Bet.IdClient = reader.GetInt32(4);
+                        Bet.DateCreate = reader.GetDateTime(5);
                         Bet.IdRoulette = id;
                         Bets.Add(Bet);
                     }                    
@@ -127,9 +131,11 @@ namespace CleanCode.Services.DB
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string query = "update Roulettes set WinNumber=@WinNumber where IdRoulette=@id";
+                string query = "update Roulettes set WinNumber=@WinNumber,DateClose=@DateClose"+ 
+                                "where IdRoulette=@id";
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@WinNumber", model.WinNumber);
+                command.Parameters.AddWithValue("@DateClose", DateTime.UtcNow);
                 command.Parameters.AddWithValue("@id", model.IdRoulette);
                 try
                 {
@@ -160,6 +166,8 @@ namespace CleanCode.Services.DB
                         var roulette = new Roulette();
                         roulette.IdRoulette = reader.GetInt32(0);
                         if (!reader.IsDBNull(1)) roulette.WinNumber = reader.GetInt32(1);
+                        roulette.DateCreate = reader.GetDateTime(2);
+                        roulette.DateClose = reader.GetDateTime(3);
                         Roulettes.Add(roulette);
                     }
                     reader.Close();

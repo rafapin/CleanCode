@@ -9,5 +9,7 @@ namespace CleanCode.Models
     {
         public int IdRoulette { get; set; }
         public int? WinNumber { get; set; }
+        public DateTime DateCreate { get; set; }
+        public DateTime? DateClose { get; set; }
     }
 }
