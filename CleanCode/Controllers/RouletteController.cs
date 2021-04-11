@@ -2,10 +2,12 @@
 using CleanCode.Services.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CleanCode.Extensions;
 
 namespace CleanCode.Controllers
 {
@@ -14,9 +16,11 @@ namespace CleanCode.Controllers
     public class RouletteController : ControllerBase
     {
         private readonly IdbRoulettes _db;
-        public RouletteController(IdbRoulettes db)
+        private readonly IDistributedCache _cache;
+        public RouletteController(IdbRoulettes db, IDistributedCache cache)
         {
             _db = db;
+            _cache = cache;
         }
 
         [HttpPost("Create")]
@@ -51,6 +55,8 @@ namespace CleanCode.Controllers
         [HttpPost("Bet")]
         public IActionResult Bet(BetRoulette model)
         {
+
+
             if (!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
@@ -94,11 +100,17 @@ namespace CleanCode.Controllers
         }
 
         [HttpGet("List")]
-        public IActionResult List()
+        public async Task<IActionResult> List()
         {
             try
             {
-                var InRoulettes = _db.GetRoulettes();
+                string recordKey = "ListRoulettes_" + DateTime.Now.ToString("yyyyMMdd_hhmmss");
+                List<Roulette> InRoulettes = await _cache.GetRecordAsync<List<Roulette>>(recordKey);
+                if(InRoulettes is null)
+                {
+                    InRoulettes = _db.GetRoulettes();
+                    await _cache.SetRecordAsync(recordKey, InRoulettes);
+                }
                 var OutRoulettes = new ResponseListRoulettes(InRoulettes);
                 return Ok(OutRoulettes);
             }

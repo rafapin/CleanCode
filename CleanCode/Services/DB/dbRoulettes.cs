@@ -42,7 +42,7 @@ namespace CleanCode.Services.DB
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string query = "insert into Bets(Number,Color,Amount,IdClient.IdRoulette)" +
+                string query = "insert into Bets(Number,Color,Amount,IdClient,IdRoulette)" +
                                "values(@Number,@Color,@Amount,@IdClient,@IdRoulette)" +
                                "select SCOPE_IDENTITY()";
                 SqlCommand command = new SqlCommand(query, connection);
